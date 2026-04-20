@@ -1,0 +1,53 @@
+// This is your database source configuration
+datasource db {
+  provider = "sqlite"                      // Using SQLite for simplicity
+  url      = env("DATABASE_URL")           // Reads from .env file
+}
+
+// This defines how to generate Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Your User model
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String?
+  createdAt DateTime  @default(now())
+  todos     Todo[]
+  notes     Note[]
+  diary     DiaryEntry[]
+}
+
+// Your Todo model
+model Todo {
+  id        String   @id @default(cuid())
+  title     String
+  completed Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+// Your Note model
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+// Your DiaryEntry model
+model DiaryEntry {
+  id        String   @id @default(cuid())
+  date      DateTime @default(now())
+  mood      String
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
