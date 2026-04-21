@@ -61,7 +61,7 @@ function LoginContent() {
             src="/assets/Images/task.jpg"
             alt="LifeHub workspace"
             fill
-            className="object-cover bg-blur-lg grayscale-[0.3] "
+            className="object-cover blur-sm grayscale-[0.3] "
           />
           <div className="relative z-10 flex h-full flex-col justify-between p-10">
             <div>
