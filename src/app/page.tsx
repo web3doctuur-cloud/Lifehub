@@ -1,335 +1,310 @@
 "use client";
-import Link from "next/link";
-import { useSession } from "next-auth/react";
+
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
+
+const tools = [
+  {
+    id: "todo",
+    title: "Smart Task Manager",
+    description: "Plan your day, track progress, and keep your priorities visible.",
+    image: "/assets/Images/task.jpg",
+    link: "/dashboard/todo",
+    category: "Planning",
+  },
+  {
+    id: "notes",
+    title: "Notes Workspace",
+    description: "Capture ideas fast and revisit them without losing context.",
+    image: "/assets/Images/book.jpg",
+    link: "/dashboard/notes",
+    category: "Writing",
+  },
+  {
+    id: "calculator",
+    title: "Quick Calculator",
+    description: "Handle everyday calculations inside the same focused workspace.",
+    image: "/assets/Images/calculator.jpg",
+    link: "/dashboard/calculator",
+    category: "Utility",
+  },
+  {
+    id: "diary",
+    title: "Digital Diary",
+    description: "Reflect on your day and build a habit of thoughtful journaling.",
+    image: "/assets/Images/task.jpg",
+    link: "/dashboard/diary",
+    category: "Reflection",
+  },
+  {
+    id: "stories",
+    title: "Storybook Library",
+    description: "Read, explore, and recharge with a curated digital reading corner.",
+    image: "/assets/Images/book.jpg",
+    link: "/dashboard/storybooks",
+    category: "Reading",
+  },
+];
+
+const highlights = [
+  { value: "5", label: "Connected tools" },
+  { value: "1", label: "Unified workspace" },
+  { value: "24/7", label: "Available across your routine" },
+];
+
+const principles = [
+  {
+    title: "See what matters fast",
+    description: "Clear hierarchy, focused cards, and faster entry points reduce friction right away.",
+  },
+  {
+    title: "Work from one calm space",
+    description: "Tasks, notes, diary entries, and reading tools live together instead of fighting for attention.",
+  },
+  {
+    title: "Keep momentum",
+    description: "The interface stays lightweight so you can act quickly and return to what you were doing.",
+  },
+];
 
 export default function LandingPage() {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Feature listings data
-  const featuredListings = [
-    {
-      id: 1,
-      title: "Smart Task Manager",
-      description: "Organize your day with our intuitive todo list. Track progress and never miss a deadline.",
-      image: "/assets/Images/task.jpg",
-      link: "/dashboard/todo"
-    },
-    {
-      id: 2,
-      title: "Quick Calculator",
-      description: "Built-in scientific calculator for all your mathematical needs. Simple yet powerful.",
-      image: "/assets/Images/calculator.jpg",
-      link: "/dashboard/calculator"
-    },
-    {
-      id: 3,
-      title: "Digital Library",
-      description: "Explore thousands of books and stories. Download for offline reading anytime.",
-      image: "/assets/Images/book.jpg",
-      link: "/dashboard/storybooks"
-    }
-  ];
+  const filteredTools = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return tools;
+
+    return tools.filter((tool) =>
+      [tool.title, tool.description, tool.category].some((value) =>
+        value.toLowerCase().includes(query),
+      ),
+    );
+  }, [searchQuery]);
 
   return (
-    <div className="min-h-screen bg-rich-black">
-      {/* Hero Section with Search */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-dark-green via-rich-black to-bangladesh-green"></div>
-        
-        {/* Animated Blobs */}
-        <div className="absolute top-20 -left-20 w-96 h-96 bg-caribbean-green/10 rounded-full blur-3xl animate-blob"></div>
-        <div className="absolute bottom-20 -right-20 w-96 h-96 bg-mountain-meadow/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-mint/5 rounded-full blur-3xl animate-pulse"></div>
-        
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-        
-        <div className="container mx-auto px-4 relative z-10 py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-caribbean-green/10 border border-caribbean-green/30 rounded-full mb-8 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-caribbean-green opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-caribbean-green"></span>
-              </span>
-              <span className="text-caribbean-green text-sm font-medium">Your Digital Productivity Hub</span>
-            </div>
-            
-            {/* Main Heading */}
-            <h1 className="text-5xl md:text-7xl font-bold text-anti-flash-white mb-6 leading-tight">
-              Find Your{' '}
-              <span className="text-caribbean-green">Productivity</span>
-              <br />
-              <span className="text-anti-flash-white">Flow</span>
+    <div className="relative overflow-hidden bg-rich-black">
+      <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+      <div className="absolute left-0 top-0 h-[34rem] w-[34rem] rounded-full bg-caribbean-green/10 blur-3xl" />
+      <div className="absolute bottom-0 right-0 h-[32rem] w-[32rem] rounded-full bg-mint/10 blur-3xl" />
+
+      <section className="relative">
+        <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-20">
+          <div className="max-w-2xl">
+            <span className="eyebrow">
+              <span className="inline-block h-2 w-2 rounded-full bg-caribbean-green" />
+              Digital organization without the clutter
+            </span>
+
+            <h1 className="mt-7 text-5xl font-bold leading-tight text-anti-flash-white sm:text-6xl lg:text-7xl">
+              Make your workflow feel
+              <span className="gradient-text"> calm, clear, and connected.</span>
             </h1>
-            
-            <p className="text-xl text-anti-flash-white/70 mb-10 max-w-2xl mx-auto">
-              Search for tools to organize your life. Find the perfect digital workspace to boost your productivity and creativity.
+
+            <p className="mt-6 max-w-xl text-lg leading-8 text-anti-flash-white/68 sm:text-xl">
+              LifeHub brings planning, note-taking, journaling, reading, and quick utility tools
+              into one modern workspace so you can focus on doing the work instead of finding it.
             </p>
-            
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-8">
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={session ? "/dashboard/todo" : "/signup"}
+                className="btn-primary px-7 py-3 text-center text-base font-semibold"
+              >
+                {session ? "Open workspace" : "Create free account"}
+              </Link>
+              <Link
+                href="#tool-explorer"
+                className="btn-outline px-7 py-3 text-center text-base font-semibold"
+              >
+                Explore tools
+              </Link>
+            </div>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              {highlights.map((item) => (
+                <div key={item.label} className="section-shell p-4">
+                  <p className="text-2xl font-bold text-caribbean-green">{item.value}</p>
+                  <p className="mt-1 text-sm text-anti-flash-white/58">{item.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="section-shell p-4 sm:p-6">
+            <div className="rounded-[1.6rem] border border-caribbean-green/15 bg-rich-black/40 p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.18em] text-caribbean-green/75">Workspace snapshot</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-anti-flash-white">Everything you need, one jump away</h2>
+                </div>
+                <div className="hidden rounded-full border border-caribbean-green/15 bg-dark-green/60 px-3 py-1 text-xs text-anti-flash-white/60 sm:block">
+                  Faster daily flow
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-3">
+                {tools.slice(0, 3).map((tool, index) => (
+                  <div
+                    key={tool.id}
+                    className="flex items-center gap-4 rounded-2xl border border-caribbean-green/12 bg-dark-green/55 px-4 py-3"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-caribbean-green/12 font-semibold text-caribbean-green">
+                      0{index + 1}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-anti-flash-white">{tool.title}</p>
+                      <p className="truncate text-sm text-anti-flash-white/55">{tool.description}</p>
+                    </div>
+                    <span className="rounded-full border border-caribbean-green/15 px-3 py-1 text-xs text-anti-flash-white/55">
+                      {tool.category}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 rounded-[1.5rem] border border-caribbean-green/12 bg-gradient-to-br from-caribbean-green/12 to-transparent p-5">
+                <p className="text-sm font-medium text-caribbean-green">What improves here</p>
+                <p className="mt-2 text-sm leading-7 text-anti-flash-white/65">
+                  Cleaner hierarchy, consistent navigation, better search-driven discovery, and dashboard screens that finally feel like part of the same product.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tool-explorer" className="relative px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <span className="eyebrow">Tool explorer</span>
+              <h2 className="mt-5 text-3xl font-bold text-anti-flash-white sm:text-4xl">
+                Find the part of LifeHub that matches what you need right now.
+              </h2>
+              <p className="mt-3 text-base leading-7 text-anti-flash-white/62 sm:text-lg">
+                Search by activity, category, or outcome. The explorer now filters instead of acting like a visual placeholder.
+              </p>
+            </div>
+
+            <div className="w-full max-w-xl">
+              <label htmlFor="tool-search" className="mb-2 block text-sm font-medium text-anti-flash-white/65">
+                Search LifeHub tools
+              </label>
               <div className="relative">
-                <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-stone" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
+                  id="tool-search"
                   type="text"
-                  placeholder="Search for task management, notes, calculator..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-dark-green/80 backdrop-blur-sm border border-caribbean-green/30 rounded-2xl text-anti-flash-white placeholder-stone focus:outline-none focus:border-caribbean-green focus:ring-2 focus:ring-caribbean-green/30 transition-all text-lg shadow-2xl"
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Try tasks, writing, diary, utility..."
+                  className="w-full rounded-[1.4rem] border border-caribbean-green/20 bg-dark-green/70 py-4 pl-12 pr-4 text-anti-flash-white placeholder:text-stone focus:border-caribbean-green focus:outline-none focus:ring-2 focus:ring-caribbean-green/15"
                 />
               </div>
             </div>
-            
-            {/* Quick Links */}
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                href="/dashboard/todo"
-                className="px-6 py-3 bg-caribbean-green/10 border border-caribbean-green/30 rounded-xl text-caribbean-green hover:bg-caribbean-green hover:text-rich-black transition-all duration-300 backdrop-blur-sm"
-              >
-                📋 Task Manager
-              </Link>
-              <Link
-                href="/dashboard/calculator"
-                className="px-6 py-3 bg-mint/10 border border-mint/30 rounded-xl text-mint hover:bg-mint hover:text-rich-black transition-all duration-300 backdrop-blur-sm"
-              >
-                🧮 Calculator
-              </Link>
-            </div>
           </div>
-        </div>
-        
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-anti-flash-white/50 text-sm">Scroll to explore</span>
-            <div className="w-5 h-10 rounded-full border-2 border-caribbean-green/30 flex justify-center">
-              <div className="w-1 h-2 bg-caribbean-green rounded-full mt-2 animate-bounce"></div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Featured Listings Section */}
-      <section className="py-20 bg-dark-green/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-anti-flash-white">
-                Featured <span className="text-caribbean-green">Tools</span>
-              </h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {filteredTools.map((tool) => (
               <Link
-                href="/login"
-                className="text-caribbean-green hover:text-mint transition-colors flex items-center gap-2"
+                key={tool.id}
+                href={tool.link}
+                className="group section-shell block overflow-hidden"
               >
-                View All
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {featuredListings.map((listing) => (
-                <Link
-                  key={listing.id}
-                  href={listing.link}
-                  className="group bg-dark-green/50 backdrop-blur-sm rounded-2xl border border-caribbean-green/20 overflow-hidden hover:border-caribbean-green/50 transition-all duration-300 hover:transform hover:-translate-y-2"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={listing.image}
-                      alt={listing.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-rich-black to-transparent opacity-60"></div>
+                <div className="relative h-56 overflow-hidden">
+                  <Image
+                    src={tool.image}
+                    alt={tool.title}
+                    fill
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-rich-black via-rich-black/35 to-transparent" />
+                  <div className="absolute left-4 top-4 rounded-full border border-caribbean-green/15 bg-rich-black/55 px-3 py-1 text-xs font-medium text-caribbean-green backdrop-blur-md">
+                    {tool.category}
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-anti-flash-white mb-2 group-hover:text-caribbean-green transition-colors">
-                      {listing.title}
-                    </h3>
-                    <p className="text-anti-flash-white/60 text-sm leading-relaxed">
-                      {listing.description}
-                    </p>
-                    <div className="mt-4 flex items-center text-caribbean-green text-sm font-medium">
-                      Explore Tool
-                      <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-20 bg-rich-black">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-anti-flash-white text-center mb-4">
-              Everything You Need in{' '}
-              <span className="text-caribbean-green">One Place</span>
-            </h2>
-            <p className="text-anti-flash-white/60 text-center mb-12 max-w-2xl mx-auto">
-              While you're organizing your life, we've got you covered. 
-              We offer a wide range of tools to make your life easier.
-            </p>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { icon: "✅", label: "Task Management" },
-                { icon: "📝", label: "Note Taking" },
-                { icon: "📔", label: "Digital Diary" },
-                { icon: "📚", label: "Book Library" },
-                { icon: "🧮", label: "Calculator" },
-                { icon: "🔒", label: "Secure Storage" },
-                { icon: "⚡", label: "Fast & Responsive" }
-              ].map((service, index) => (
-                <div
-                  key={index}
-                  className="bg-dark-green/40 backdrop-blur-sm rounded-xl p-6 border border-caribbean-green/20 text-center hover:border-caribbean-green/40 transition-all duration-300"
-                >
-                  <span className="text-3xl mb-3 block">{service.icon}</span>
-                  <span className="text-anti-flash-white/80 text-sm font-medium">{service.label}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* About Developer Section */}
-      <section className="py-20 bg-gradient-to-b from-dark-green/50 to-rich-black">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-dark-green/50 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-caribbean-green/20">
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="relative">
-                  <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-caribbean-green to-mint p-1">
-                    <div className="w-full h-full rounded-2xl bg-rich-black flex items-center justify-center text-5xl">
-                      👩‍💻
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-caribbean-green rounded-full border-4 border-rich-black"></div>
-                </div>
-                
-                <div className="flex-1 text-center md:text-left">
-                  <h2 className="text-2xl md:text-3xl font-bold text-anti-flash-white mb-2">
-                    Meet the Developer
-                  </h2>
-                  <p className="text-xl text-caribbean-green mb-4">Yusuf Rodiah Hadizah</p>
-                  <p className="text-anti-flash-white/70 leading-relaxed">
-                    With over 4 years of experience as a Frontend Developer, I created LifeHub to solve a common problem - 
-                    the chaos of juggling multiple productivity tools. LifeHub combines task management, journaling, 
-                    and literary exploration in one beautiful, user-friendly platform.
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-anti-flash-white group-hover:text-caribbean-green">
+                    {tool.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-anti-flash-white/60 sm:text-base">
+                    {tool.description}
                   </p>
-                  
-                  <div className="flex flex-wrap gap-3 justify-center md:justify-start mt-6">
-                    {[
-                      { value: '4+', label: 'Years Experience' },
-                      { value: '10+', label: 'Projects' },
-                      { value: '100%', label: 'User Focused' }
-                    ].map((stat, i) => (
-                      <div key={i} className="bg-caribbean-green/10 rounded-xl px-4 py-2 border border-caribbean-green/20">
-                        <span className="text-caribbean-green font-bold">{stat.value}</span>
-                        <span className="text-anti-flash-white/60 text-sm ml-2">{stat.label}</span>
-                      </div>
-                    ))}
+                  <div className="mt-6 flex items-center justify-between text-sm font-medium text-caribbean-green">
+                    <span>Open tool</span>
+                    <span aria-hidden="true" className="transition group-hover:translate-x-1">
+                      {"->"}
+                    </span>
                   </div>
                 </div>
-              </div>
+              </Link>
+            ))}
+          </div>
+
+          {filteredTools.length === 0 && (
+            <div className="section-shell mt-8 p-8 text-center">
+              <p className="text-xl font-semibold text-anti-flash-white">No tools match that search yet.</p>
+              <p className="mt-2 text-sm text-anti-flash-white/58">
+                Try words like tasks, notes, writing, diary, reading, or calculator.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="section-shell p-8">
+            <span className="eyebrow">Experience</span>
+            <h2 className="mt-5 text-3xl font-bold text-anti-flash-white">A more intentional product experience</h2>
+            <div className="mt-6 space-y-5">
+              {principles.map((item) => (
+                <div key={item.title} className="rounded-3xl border border-caribbean-green/12 bg-rich-black/28 p-5">
+                  <h3 className="text-lg font-semibold text-anti-flash-white">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-7 text-anti-flash-white/60 sm:text-base">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="section-shell p-8 sm:p-10">
+            <span className="eyebrow">Get started</span>
+            <h2 className="mt-5 text-3xl font-bold text-anti-flash-white sm:text-4xl">
+              Ready to organize your digital life in one place?
+            </h2>
+            <p className="mt-4 max-w-2xl text-base leading-8 text-anti-flash-white/64 sm:text-lg">
+              The refreshed interface is designed to help you move from intention to action faster, whether you are planning work, writing notes, or capturing personal reflections.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              {!session ? (
+                <>
+                  <Link href="/signup" className="btn-primary px-7 py-3 text-center text-base font-semibold">
+                    Create free account
+                  </Link>
+                  <Link href="/login" className="btn-outline px-7 py-3 text-center text-base font-semibold">
+                    Sign in
+                  </Link>
+                </>
+              ) : (
+                <Link href="/dashboard/todo" className="btn-primary px-7 py-3 text-center text-base font-semibold">
+                  Continue to dashboard
+                </Link>
+              )}
             </div>
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-caribbean-green/10 to-mint/10"></div>
-        <div className="absolute top-0 left-0 w-96 h-96 bg-caribbean-green/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-mint/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-anti-flash-white mb-4">
-              Ready to Transform Your{' '}
-              <span className="text-caribbean-green">Digital Life</span>?
-            </h2>
-            <p className="text-xl text-anti-flash-white/70 mb-8">
-              Join thousands of users who have simplified their daily workflow with LifeHub.
-            </p>
-            
-            {!session ? (
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/signup"
-                  className="px-8 py-4 bg-caribbean-green text-rich-black rounded-xl font-semibold text-lg hover:bg-mint transition-all duration-300 transform hover:scale-105 shadow-lg shadow-caribbean-green/30"
-                >
-                  Create Free Account
-                </Link>
-                <Link
-                  href="/login"
-                  className="px-8 py-4 bg-transparent border-2 border-caribbean-green text-caribbean-green rounded-xl font-semibold text-lg hover:bg-caribbean-green hover:text-rich-black transition-all duration-300"
-                >
-                  Sign In
-                </Link>
-              </div>
-            ) : (
-              <Link
-                href="/todo"
-                className="inline-block px-8 py-4 bg-caribbean-green text-rich-black rounded-xl font-semibold text-lg hover:bg-mint transition-all duration-300 transform hover:scale-105 shadow-lg shadow-caribbean-green/30"
-              >
-                Get Started
-              </Link>
-            )}
-            
-            <p className="text-anti-flash-white/50 text-sm mt-6">
-              No credit card required • Free forever plan available
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        .bg-grid-pattern {
-          background-image: linear-gradient(rgba(0, 223, 129, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 223, 129, 0.05) 1px, transparent 1px);
-          background-size: 50px 50px;
-        }
-      `}</style>
     </div>
   );
 }

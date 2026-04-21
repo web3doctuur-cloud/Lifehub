@@ -1,253 +1,103 @@
 "use client";
+
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+
+const productLinks = [
+  { label: "Task Manager", href: "/dashboard/todo" },
+  { label: "Notes", href: "/dashboard/notes" },
+  { label: "Diary", href: "/dashboard/diary" },
+  { label: "Storybooks", href: "/dashboard/storybooks" },
+  { label: "Calculator", href: "/dashboard/calculator" },
+];
 
 export default function Footer() {
   const { data: session } = useSession();
   const currentYear = new Date().getFullYear();
 
-  const quickLinks = [
-    { name: "Todo", href: "/dashboard/todo", icon: "check-circle" },
-    { name: "Calculator", href: "/dashboard/calculator", icon: "calculator" },
-    { name: "Stories", href: "/dashboard/storybooks", icon: "book-open" },
-    { name: "Notes", href: "/dashboard/notes", icon: "edit-3" },
-    { name: "Diary", href: "/dashboard/diary", icon: "bookmark" },
-  ];
-
-  const Icon = ({ name, className = "w-5 h-5" }) => {
-    const icons = {
-      "check-circle": (
-        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      calculator: (
-        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-        </svg>
-      ),
-      "book-open": (
-        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-      ),
-      "edit-3": (
-        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-        </svg>
-      ),
-      bookmark: (
-        <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-        </svg>
-      ),
-      github: (
-        <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-          <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-        </svg>
-      ),
-      twitter: (
-        <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-          <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-        </svg>
-      ),
-      linkedin: (
-        <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-        </svg>
-      ),
-    };
-    return icons[name] || null;
-  };
-
   return (
-    <footer className="bg-black border-t border-gray-800 mt-auto">
-      {/* Main Footer */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-lilac-500 to-lilac-700 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+    <footer className="relative mt-auto overflow-hidden border-t border-caribbean-green/15 bg-rich-black">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(47,169,140,0.12),transparent_30%),linear-gradient(180deg,rgba(3,34,33,0.9),rgba(2,26,26,1))]" />
+      <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr_1fr]">
+          <div className="max-w-xl">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-caribbean-green via-mountain-meadow to-mint shadow-[0_10px_30px_rgba(0,223,129,0.25)]">
+                <span className="text-lg font-black text-rich-black">L</span>
               </div>
-              <span className="text-2xl font-bold">
-                <span className="gradient-text">Life</span>
-                <span className="text-white">Hub</span>
-              </span>
+              <div>
+                <p className="text-xl font-semibold text-anti-flash-white">
+                  Life<span className="text-caribbean-green">Hub</span>
+                </p>
+                <p className="text-sm text-anti-flash-white/50">A calmer way to run your day</p>
+              </div>
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Your all-in-one productivity suite for task management, digital journaling, and literary adventures.
+
+            <p className="mt-5 text-sm leading-7 text-anti-flash-white/68 sm:text-base">
+              One workspace for planning, writing, reflecting, and keeping momentum.
+              LifeHub helps you stay organized without bouncing between disconnected tools.
             </p>
-            <div className="flex space-x-4 pt-2">
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-lilac-400 transition-colors duration-200"
-                aria-label="GitHub"
-              >
-                <Icon name="github" className="w-5 h-5" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-lilac-400 transition-colors duration-200"
-                aria-label="Twitter"
-              >
-                <Icon name="twitter" className="w-5 h-5" />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-lilac-400 transition-colors duration-200"
-                aria-label="LinkedIn"
-              >
-                <Icon name="linkedin" className="w-5 h-5" />
-              </a>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <span className="badge-success">Focused productivity</span>
+              <span className="badge-info">Notes and journaling</span>
+              <span className="badge-warning">Built for daily routines</span>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg">Quick Links</h3>
-            <ul className="space-y-2">
-              {session && quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="flex items-center space-x-2 text-gray-400 hover:text-lilac-400 transition-colors duration-200 text-sm"
-                  >
-                    <Icon name={link.icon} className="w-4 h-4" />
-                    <span>{link.name}</span>
-                  </Link>
-                </li>
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-caribbean-green/80">
+              Explore
+            </h3>
+            <div className="mt-5 space-y-3">
+              {(session ? productLinks : [
+                { label: "Home", href: "/" },
+                { label: "Login", href: "/login" },
+                { label: "Create account", href: "/signup" },
+              ]).map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block text-sm text-anti-flash-white/70 hover:text-caribbean-green sm:text-base"
+                >
+                  {link.label}
+                </Link>
               ))}
-              {!session && (
-                <>
-                  <li>
-                    <Link href="/" className="text-gray-400 hover:text-lilac-400 transition-colors duration-200 text-sm">
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/login" className="text-gray-400 hover:text-lilac-400 transition-colors duration-200 text-sm">
-                      Login
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/signup" className="text-gray-400 hover:text-lilac-400 transition-colors duration-200 text-sm">
-                      Sign Up
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
+            </div>
           </div>
 
-          {/* Features */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg">Features</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-lilac-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Task Management</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-lilac-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Digital Journaling</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-lilac-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Storybook Explorer</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-lilac-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Scientific Calculator</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact/Info */}
-          <div className="space-y-4">
-            <h3 className="text-white font-semibold text-lg">Connect</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-lilac-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <span>rodiah@lifehub.com</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-lilac-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4-3-9s1.34-9 3-9" />
-                </svg>
-                <span>Version 1.0.0</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <svg className="w-4 h-4 text-lilac-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>© 2023-{currentYear}</span>
-              </li>
-            </ul>
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-caribbean-green/80">
+              Product Notes
+            </h3>
+            <div className="mt-5 section-shell p-5">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-2xl font-bold text-anti-flash-white">5</p>
+                  <p className="text-sm text-anti-flash-white/55">Core tools</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-caribbean-green">1</p>
+                  <p className="text-sm text-anti-flash-white/55">Unified workspace</p>
+                </div>
+              </div>
+              <p className="mt-5 text-sm leading-6 text-anti-flash-white/65">
+                Designed to keep your planning, writing, and daily capture in the same calm environment.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-800 my-8"></div>
-
-        {/* Bottom Footer */}
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <div className="text-center md:text-left">
-            <p className="text-gray-500 text-sm">
-              Created with <span className="text-red-500">❤️</span> by <span className="text-lilac-400">Yusuf Rodiah Hadizah</span>
-            </p>
-            <p className="text-gray-600 text-xs mt-1">
-              Frontend Developer with 4+ years of experience
-            </p>
-          </div>
-          
-          <div className="flex space-x-6">
-            <Link href="/privacy" className="text-gray-500 hover:text-lilac-400 text-xs transition-colors duration-200">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-gray-500 hover:text-lilac-400 text-xs transition-colors duration-200">
-              Terms of Service
-            </Link>
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="text-gray-500 hover:text-lilac-400 text-xs transition-colors duration-200 flex items-center space-x-1"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
-              <span>Back to Top</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Tech Stack Badge */}
-        <div className="mt-8 text-center">
-          <div className="inline-flex flex-wrap justify-center gap-2">
-            <span className="px-2 py-1 bg-gray-900 rounded text-xs text-gray-500">Next.js 14</span>
-            <span className="px-2 py-1 bg-gray-900 rounded text-xs text-gray-500">TypeScript</span>
-            <span className="px-2 py-1 bg-gray-900 rounded text-xs text-gray-500">Tailwind CSS</span>
-            <span className="px-2 py-1 bg-gray-900 rounded text-xs text-gray-500">Prisma</span>
-            <span className="px-2 py-1 bg-gray-900 rounded text-xs text-gray-500">NextAuth.js</span>
-          </div>
+        <div className="mt-10 flex flex-col gap-4 border-t border-caribbean-green/15 pt-6 text-sm text-anti-flash-white/50 md:flex-row md:items-center md:justify-between">
+          <p>Copyright {currentYear} LifeHub. Built for more focused digital routines.</p>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="text-left text-caribbean-green hover:text-mint md:text-right"
+          >
+            Back to top
+          </button>
         </div>
       </div>
     </footer>

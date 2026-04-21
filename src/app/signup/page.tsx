@@ -1,7 +1,15 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+const setupPoints = [
+  "Create an account in under a minute",
+  "Manage tasks, notes, and diary entries in one place",
+  "Move into the dashboard immediately after sign up",
+];
 
 export default function SignupPage() {
   const router = useRouter();
@@ -12,143 +20,188 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords don't match");
+      setError("Passwords do not match.");
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters.");
       setLoading(false);
       return;
     }
 
     try {
-      // CHANGE THIS URL - removed "auth" from the path
-      const res = await fetch("/api/signup", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (res.ok) {
-        router.push("/login?registered=true");
-      } else {
-        setError(data.error || "Something went wrong");
+      if (!response.ok) {
+        setError(data.error || "Something went wrong while creating your account.");
+        return;
       }
-    } catch (error) {
-      setError("Failed to create account");
+
+      router.push("/login?registered=true");
+    } catch {
+      setError("Failed to create account. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-teal-600 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-2xl">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create Account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Join LifeHub today!
-          </p>
-        </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-              {error}
-            </div>
-          )}
-          
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label htmlFor="name" className="sr-only">
-                Full Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Full Name"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Password (min. 6 characters)"
-              />
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="sr-only">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Confirm Password"
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-            >
-              {loading ? "Creating account..." : "Sign up"}
-            </button>
-          </div>
-
-          <div className="text-center">
-            <Link href="/login" className="text-sm text-green-600 hover:text-green-500">
-              Already have an account? Sign in
+    <div className="min-h-screen bg-rich-black">
+      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
+        <section className="mx-auto w-full max-w-lg lg:mx-0">
+          <div className="mb-8 text-center lg:text-left">
+            <Link href="/" className="inline-flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-caribbean-green to-mint">
+                <span className="text-lg font-black text-rich-black">L</span>
+              </div>
+              <span className="text-2xl font-semibold text-anti-flash-white">
+                Life<span className="text-caribbean-green">Hub</span>
+              </span>
             </Link>
           </div>
-        </form>
+
+          <div className="section-shell p-7 sm:p-8">
+            <p className="text-sm uppercase tracking-[0.2em] text-caribbean-green/80">Create account</p>
+            <h1 className="mt-3 text-3xl font-bold text-anti-flash-white">Start your workspace</h1>
+            <p className="mt-2 text-sm leading-7 text-anti-flash-white/60 sm:text-base">
+              Join LifeHub and keep your planning, notes, and reflection in one focused environment.
+            </p>
+
+            <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+              {error && (
+                <div className="rounded-2xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="name" className="mb-2 block text-sm font-medium text-anti-flash-white/72">
+                  Full name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="Your name"
+                  className="w-full rounded-2xl border border-caribbean-green/20 bg-rich-black/45 px-4 py-3 text-anti-flash-white placeholder:text-stone focus:border-caribbean-green focus:outline-none focus:ring-2 focus:ring-caribbean-green/15"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="mb-2 block text-sm font-medium text-anti-flash-white/72">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-2xl border border-caribbean-green/20 bg-rich-black/45 px-4 py-3 text-anti-flash-white placeholder:text-stone focus:border-caribbean-green focus:outline-none focus:ring-2 focus:ring-caribbean-green/15"
+                />
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="password" className="mb-2 block text-sm font-medium text-anti-flash-white/72">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Minimum 6 characters"
+                    className="w-full rounded-2xl border border-caribbean-green/20 bg-rich-black/45 px-4 py-3 text-anti-flash-white placeholder:text-stone focus:border-caribbean-green focus:outline-none focus:ring-2 focus:ring-caribbean-green/15"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="confirm-password" className="mb-2 block text-sm font-medium text-anti-flash-white/72">
+                    Confirm password
+                  </label>
+                  <input
+                    id="confirm-password"
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder="Repeat password"
+                    className="w-full rounded-2xl border border-caribbean-green/20 bg-rich-black/45 px-4 py-3 text-anti-flash-white placeholder:text-stone focus:border-caribbean-green focus:outline-none focus:ring-2 focus:ring-caribbean-green/15"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center rounded-2xl bg-caribbean-green px-4 py-3 font-semibold text-rich-black shadow-[0_15px_40px_rgba(0,223,129,0.18)] hover:bg-mint disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? "Creating account..." : "Create account"}
+              </button>
+            </form>
+
+            <div className="mt-6 rounded-2xl border border-caribbean-green/12 bg-rich-black/25 px-4 py-3 text-sm text-anti-flash-white/58">
+              Already have an account?{" "}
+              <Link href="/login" className="font-medium text-caribbean-green hover:text-mint">
+                Sign in here
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section-shell hidden min-h-[42rem] overflow-hidden lg:block">
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,26,26,0.35),rgba(2,26,26,0.92))]" />
+          <Image
+            src="/assets/Images/book.jpg"
+            alt="LifeHub setup"
+            fill
+            className="object-cover"
+          />
+          <div className="relative z-10 flex h-full flex-col justify-between p-10">
+            <div>
+              <span className="eyebrow">Quick onboarding</span>
+              <h2 className="mt-6 max-w-xl text-5xl font-bold leading-tight text-anti-flash-white">
+                Set up once, then keep everything in reach.
+              </h2>
+              <p className="mt-5 max-w-lg text-lg leading-8 text-anti-flash-white/70">
+                The refreshed experience is built to get you from sign up to useful action quickly, without clutter or confusing handoffs.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {setupPoints.map((point, index) => (
+                <div
+                  key={point}
+                  className="flex items-start gap-4 rounded-3xl border border-caribbean-green/15 bg-rich-black/28 px-5 py-4 backdrop-blur-sm"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-caribbean-green/12 font-semibold text-caribbean-green">
+                    {index + 1}
+                  </div>
+                  <p className="text-base leading-7 text-anti-flash-white/74">{point}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

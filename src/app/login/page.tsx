@@ -1,10 +1,16 @@
 "use client";
-import { useState } from "react";
+
+import Image from "next/image";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useState, Suspense } from "react";
+import React from "react";
 
-export default function LoginPage() {
+const benefits = ["Tasks and planning", "Notes and writing", "Daily reflection", "Reading and utility tools"];
+
+// Separate component that uses useSearchParams
+function LoginContent() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,8 +18,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Move useSearchParams inside this component
+  const [registered, setRegistered] = useState<string | null>(null);
+  
+  // Use useEffect to read searchParams after mount (client-side only)
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRegistered(params.get("registered"));
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
     setError("");
 
@@ -26,240 +41,181 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError("Invalid email or password");
-      } else {
-        router.push("/dashboard/todo");
+        return;
       }
-    } catch (error) {
-      setError("Something went wrong");
+
+      router.push("/dashboard/todo");
+    } catch {
+      setError("Something went wrong while signing you in.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-rich-black">
-      {/* Left Side - Image (Hidden on mobile, visible on desktop) */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Background Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-dark-green/90 via-rich-black/70 to-bangladesh-green/90 z-10"></div>
-        
-        {/* Task Management Image - Using HTML img tag */}
-        <img
-          src="/assets/Images/task.jpg"
-          alt="Task Management"
-          className="w-full h-full object-cover"
-        />
-        
-        {/* Content Overlay */}
-        <div className="absolute inset-0 z-20 flex flex-col justify-center px-12">
-          <div className="max-w-md">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-caribbean-green/20 backdrop-blur-sm border border-caribbean-green/30 rounded-full mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-caribbean-green opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-caribbean-green"></span>
-              </span>
-              <span className="text-caribbean-green text-sm font-medium">Welcome Back</span>
+    <div className="min-h-screen bg-rich-black">
+      <div className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_0.95fr] lg:px-8">
+        <section className="section-shell hidden min-h-[42rem] overflow-hidden lg:block">
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,26,26,0.35),rgba(2,26,26,0.92))]" />
+          <Image
+            src="/assets/Images/task.jpg"
+            alt="LifeHub workspace"
+            fill
+            className="object-cover"
+          />
+          <div className="relative z-10 flex h-full flex-col justify-between p-10">
+            <div>
+              <span className="eyebrow">Welcome back</span>
+              <h1 className="mt-6 max-w-xl text-5xl font-bold leading-tight text-anti-flash-white">
+                Return to a workspace built to keep you focused.
+              </h1>
+              <p className="mt-5 max-w-lg text-lg leading-8 text-anti-flash-white/70">
+                Pick up where you left off with your tasks, notes, diary, and everyday tools in one calm interface.
+              </p>
             </div>
-            
-            <h1 className="text-4xl xl:text-5xl font-bold text-anti-flash-white mb-4 leading-tight">
-              Organize Your{' '}
-              <span className="text-caribbean-green">Life</span>
-              <br />
-              Seamlessly
-            </h1>
-            
-            <p className="text-anti-flash-white/70 text-lg mb-8 leading-relaxed">
-              Access your tasks, notes, diary, and more. Everything you need to stay productive in one place.
-            </p>
-            
-            {/* Feature Pills */}
-            <div className="flex flex-wrap gap-3">
-              {["Task Manager", "Digital Notes", "Calculator", "Book Library"].map((feature, i) => (
-                <span 
-                  key={i}
-                  className="px-4 py-2 bg-anti-flash-white/5 backdrop-blur-sm border border-caribbean-green/20 rounded-full text-anti-flash-white/80 text-sm"
-                >
-                  {feature}
-                </span>
-              ))}
-            </div>
-            
-            {/* Stats */}
-            <div className="flex gap-8 mt-12 pt-8 border-t border-caribbean-green/20">
-              <div>
-                <div className="text-2xl font-bold text-caribbean-green">10k+</div>
-                <div className="text-anti-flash-white/50 text-sm">Active Users</div>
+
+            <div className="space-y-5">
+              <div className="grid grid-cols-2 gap-3">
+                {benefits.map((benefit) => (
+                  <div
+                    key={benefit}
+                    className="rounded-2xl border border-caribbean-green/15 bg-rich-black/30 px-4 py-3 text-sm text-anti-flash-white/75 backdrop-blur-sm"
+                  >
+                    {benefit}
+                  </div>
+                ))}
               </div>
-              <div>
-                <div className="text-2xl font-bold text-caribbean-green">4.9</div>
-                <div className="text-anti-flash-white/50 text-sm">User Rating</div>
+
+              <div className="flex gap-8 border-t border-caribbean-green/20 pt-6">
+                <div>
+                  <p className="text-3xl font-bold text-caribbean-green">5</p>
+                  <p className="text-sm text-anti-flash-white/55">Connected tools</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-bold text-caribbean-green">1</p>
+                  <p className="text-sm text-anti-flash-white/55">Unified space</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Decorative Elements */}
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-caribbean-green/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-mint/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
-      </div>
+        </section>
 
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-        <div className="w-full max-w-md">
-          {/* Logo for Mobile */}
-          <div className="lg:hidden text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-caribbean-green to-mint rounded-xl flex items-center justify-center shadow-lg shadow-caribbean-green/20">
-                <span className="text-rich-black font-bold text-xl">L</span>
+        <section className="mx-auto w-full max-w-lg">
+          <div className="mb-8 text-center lg:hidden">
+            <Link href="/" className="inline-flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-caribbean-green to-mint">
+                <span className="text-lg font-black text-rich-black">L</span>
               </div>
-              <span className="text-2xl font-bold text-anti-flash-white">
+              <span className="text-2xl font-semibold text-anti-flash-white">
                 Life<span className="text-caribbean-green">Hub</span>
               </span>
             </Link>
           </div>
-          
-          <div className="bg-dark-green/30 backdrop-blur-xl rounded-3xl p-8 border border-caribbean-green/20 shadow-2xl">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-anti-flash-white mb-2">
-                Welcome Back!
-              </h2>
-              <p className="text-anti-flash-white/60">
-                Sign in to continue to your account
-              </p>
-            </div>
-            
-            <form className="space-y-6" onSubmit={handleSubmit}>
+
+          <div className="section-shell p-7 sm:p-8">
+            <p className="text-sm uppercase tracking-[0.2em] text-caribbean-green/80">Sign in</p>
+            <h2 className="mt-3 text-3xl font-bold text-anti-flash-white">Welcome back</h2>
+            <p className="mt-2 text-sm leading-7 text-anti-flash-white/60 sm:text-base">
+              Sign in to continue planning, writing, and tracking your day.
+            </p>
+
+            <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+              {registered === "true" && (
+                <div className="rounded-2xl border border-caribbean-green/30 bg-caribbean-green/10 px-4 py-3 text-sm text-caribbean-green">
+                  Your account is ready. Sign in to open your dashboard.
+                </div>
+              )}
+
               {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm backdrop-blur-sm">
+                <div className="rounded-2xl border border-red-500/35 bg-red-500/10 px-4 py-3 text-sm text-red-300">
                   {error}
                 </div>
               )}
-              
-              {/* Email Input */}
+
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-anti-flash-white/70 mb-2">
-                  Email Address
+                <label htmlFor="email" className="mb-2 block text-sm font-medium text-anti-flash-white/72">
+                  Email address
                 </label>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-stone">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 7.89a2 2 0 002.828 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-rich-black/50 border border-caribbean-green/20 rounded-xl text-anti-flash-white placeholder-stone focus:outline-none focus:border-caribbean-green focus:ring-2 focus:ring-caribbean-green/20 transition-all"
-                    placeholder="you@example.com"
-                  />
-                </div>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-2xl border border-caribbean-green/20 bg-rich-black/45 px-4 py-3 text-anti-flash-white placeholder:text-stone focus:border-caribbean-green focus:outline-none focus:ring-2 focus:ring-caribbean-green/15"
+                />
               </div>
-              
-              {/* Password Input */}
+
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-anti-flash-white/70 mb-2">
-                  Password
-                </label>
+                <div className="mb-2 flex items-center justify-between">
+                  <label htmlFor="password" className="text-sm font-medium text-anti-flash-white/72">
+                    Password
+                  </label>
+                  <span className="text-sm text-anti-flash-white/45">Secure sign-in</span>
+                </div>
                 <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-stone">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
                   <input
                     id="password"
-                    name="password"
                     type={showPassword ? "text" : "password"}
                     required
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-12 py-3 bg-rich-black/50 border border-caribbean-green/20 rounded-xl text-anti-flash-white placeholder-stone focus:outline-none focus:border-caribbean-green focus:ring-2 focus:ring-caribbean-green/20 transition-all"
-                    placeholder="••••••••"
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full rounded-2xl border border-caribbean-green/20 bg-rich-black/45 px-4 py-3 pr-12 text-anti-flash-white placeholder:text-stone focus:border-caribbean-green focus:outline-none focus:ring-2 focus:ring-caribbean-green/15"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-caribbean-green transition-colors"
+                    onClick={() => setShowPassword((value) => !value)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-anti-flash-white/55 hover:text-caribbean-green"
                   >
-                    {showPassword ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    )}
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
               </div>
-              
-              {/* Remember & Forgot */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-caribbean-green/30 bg-rich-black text-caribbean-green focus:ring-caribbean-green focus:ring-offset-0"
-                  />
-                  <span className="text-sm text-anti-flash-white/70">Remember me</span>
-                </label>
-                <Link href="/forgot-password" className="text-sm text-caribbean-green hover:text-mint transition-colors">
-                  Forgot password?
-                </Link>
-              </div>
-              
-              {/* Submit Button */}
+
+              <label className="flex items-center gap-3 text-sm text-anti-flash-white/65">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-caribbean-green/30 bg-rich-black text-caribbean-green focus:ring-caribbean-green focus:ring-offset-0"
+                />
+                Keep me signed in on this device
+              </label>
+
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-caribbean-green text-rich-black rounded-xl font-semibold hover:bg-mint transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:transform-none shadow-lg shadow-caribbean-green/20"
+                className="flex w-full items-center justify-center rounded-2xl bg-caribbean-green px-4 py-3 font-semibold text-rich-black shadow-[0_15px_40px_rgba(0,223,129,0.18)] hover:bg-mint disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Signing in...
-                  </span>
-                ) : (
-                  "Sign In"
-                )}
+                {loading ? "Signing in..." : "Sign in"}
               </button>
-              
-              {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-caribbean-green/20"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-dark-green/30 text-anti-flash-white/50">or</span>
-                </div>
-              </div>
-              
-              {/* Sign Up Link */}
-              <div className="text-center">
-                <p className="text-anti-flash-white/60 text-sm">
-                  Don't have an account?{' '}
-                  <Link href="/signup" className="text-caribbean-green hover:text-mint font-medium transition-colors">
-                    Create free account
-                  </Link>
-                </p>
-              </div>
             </form>
+
+            <div className="mt-6 rounded-2xl border border-caribbean-green/12 bg-rich-black/25 px-4 py-3 text-sm text-anti-flash-white/58">
+              New to LifeHub?{" "}
+              <Link href="/signup" className="font-medium text-caribbean-green hover:text-mint">
+                Create your free account
+              </Link>
+            </div>
           </div>
-          
-          {/* Footer Text */}
-          <p className="text-center text-anti-flash-white/40 text-xs mt-6">
-            By signing in, you agree to our Terms of Service and Privacy Policy
-          </p>
-        </div>
+        </section>
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-rich-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-caribbean-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-anti-flash-white">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
