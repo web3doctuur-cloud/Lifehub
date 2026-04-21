@@ -174,7 +174,7 @@ export default function SignupPage() {
             src="/assets/Images/task.jpg"
             alt="LifeHub setup"
             fill
-            className=" blur-lg grayscale-[0.3] "
+            className=" blur-md grayscale-[0.3] "
           />
           <div className="relative z-10 flex h-full flex-col justify-between p-10">
             <div>
