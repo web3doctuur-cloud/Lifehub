@@ -171,10 +171,10 @@ export default function SignupPage() {
         <section className="section-shell hidden min-h-[42rem] overflow-hidden lg:block">
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,26,26,0.35),rgba(2,26,26,0.92))]" />
           <Image
-            src="/assets/Images/book.jpg"
+            src="/assets/Images/task.jpg"
             alt="LifeHub setup"
             fill
-            className="object-cover"
+            className=" blur-lg grayscale-[0.3] "
           />
           <div className="relative z-10 flex h-full flex-col justify-between p-10">
             <div>
