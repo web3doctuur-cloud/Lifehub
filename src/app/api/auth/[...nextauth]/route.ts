@@ -22,10 +22,12 @@ const handler = NextAuth({
           where: { email: credentials.email }
         });
 
-        if (!user) {
+        // Check if user exists AND has a password
+        if (!user || !user.password) {
           return null;
         }
 
+        // Now TypeScript knows user.password is a string
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password

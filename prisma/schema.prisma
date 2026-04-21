@@ -19,8 +19,7 @@ model User {
   todos         Todo[]
   notes         Note[]
   diaryEntries  DiaryEntry[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  date          DateTime  @default(now())  // ✅ Changed from createdAt
 }
 
 model Account {
@@ -59,31 +58,28 @@ model VerificationToken {
 }
 
 model Todo {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  completed   Boolean  @default(false)
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  completed Boolean  @default(false)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())  // ✅ Changed from createdAt/updatedAt
 }
 
 model Note {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  content   String
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  title   String
+  content String
+  userId  String   @db.ObjectId
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date    DateTime @default(now())  // ✅ Single date field instead of createdAt/updatedAt
 }
 
 model DiaryEntry {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  content   String
-  mood      String
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  mood    String
+  userId  String   @db.ObjectId
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date    DateTime @default(now())  // ✅ Changed from createdAt
 }

@@ -22,7 +22,7 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Get all diary entries for this user, ordered by most recent first
+    
     const entries = await prisma.diaryEntry.findMany({
       where: { userId: user.id },
       orderBy: { date: 'desc' }
@@ -60,12 +60,13 @@ export async function POST(request: Request) {
     }
 
     // Create new diary entry
+    // ✅ FIXED: Removed 'date' field - it's automatically set by @default(now())
     const entry = await prisma.diaryEntry.create({
       data: {
         content,
         mood,
-        userId: user.id,
-        date: new Date()
+        userId: user.id
+        // createdAt is automatic, no need to set it
       }
     });
 

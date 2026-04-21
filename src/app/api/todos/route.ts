@@ -22,9 +22,10 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // ✅ FIXED: createdAt → date
     const todos = await prisma.todo.findMany({
       where: { userId: user.id },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { date: 'desc' }
     });
 
     return NextResponse.json(todos);
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
       data: {
         title,
         userId: user.id
+        // date is automatic with @default(now())
       }
     });
 

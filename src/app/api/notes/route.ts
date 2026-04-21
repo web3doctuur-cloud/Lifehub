@@ -4,9 +4,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Make sure GET is properly exported
+// GET - Fetch all notes for the logged-in user
 export async function GET() {
-  console.log("Notes GET API called"); // Add logging for debugging
+  console.log("Notes GET API called");
   
   try {
     const session = await getServerSession();
@@ -18,7 +18,6 @@ export async function GET() {
 
     console.log("Session found for:", session.user.email);
 
-    // Find the user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email }
     });
@@ -30,10 +29,10 @@ export async function GET() {
 
     console.log("User found, fetching notes for user:", user.id);
 
-    // Get all notes for this user
+    // ✅ FIXED: updatedAt → date
     const notes = await prisma.note.findMany({
       where: { userId: user.id },
-      orderBy: { updatedAt: 'desc' }
+      orderBy: { date: 'desc' }
     });
 
     console.log(`Found ${notes.length} notes`);
@@ -44,7 +43,7 @@ export async function GET() {
   }
 }
 
-// Make sure POST is properly exported
+// POST - Create a new note
 export async function POST(request: Request) {
   console.log("Notes POST API called");
   
@@ -74,12 +73,99 @@ export async function POST(request: Request) {
         title,
         content,
         userId: user.id
+        // date is automatic with @default(now())
       }
     });
 
     return NextResponse.json(note, { status: 201 });
   } catch (error) {
     console.error("Error creating note:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+// PUT - Update a note
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession();
+    
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id, title, content } = await request.json();
+
+    if (!id || !title || !content) {
+      return NextResponse.json({ error: "ID, title, and content are required" }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const existingNote = await prisma.note.findFirst({
+      where: { id, userId: user.id }
+    });
+
+    if (!existingNote) {
+      return NextResponse.json({ error: "Note not found or unauthorized" }, { status: 404 });
+    }
+
+    const updatedNote = await prisma.note.update({
+      where: { id },
+      data: { title, content }
+    });
+
+    return NextResponse.json(updatedNote);
+  } catch (error) {
+    console.error("Error updating note:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+// DELETE - Delete a note
+export async function DELETE(request: Request) {
+  try {
+    const session = await getServerSession();
+    
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const noteId = searchParams.get("id");
+
+    if (!noteId) {
+      return NextResponse.json({ error: "Note ID is required" }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const note = await prisma.note.findFirst({
+      where: { id: noteId, userId: user.id }
+    });
+
+    if (!note) {
+      return NextResponse.json({ error: "Note not found or unauthorized" }, { status: 404 });
+    }
+
+    await prisma.note.delete({
+      where: { id: noteId }
+    });
+
+    return NextResponse.json({ message: "Note deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting note:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
