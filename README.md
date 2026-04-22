@@ -21,16 +21,15 @@ LifeHub is a comprehensive web application that combines task management, note-t
 - Tailwind CSS - Utility-first CSS framework
 - NextAuth.js - Authentication solution
 
- Backend
+### Backend
 - Next.js API Routes - Serverless API endpoints
 - Prisma- Next-generation ORM
-- SQLite- Lightweight database (development)
-- PostgreSQL- Production database ready
+- MongoDB (lMongoDB Atlas account)
 
-APIs & Integrations
-- **Gutendex API** - Free public domain books API (Project Gutenberg)
+### APIs & Integrations
+- Gutendex API - Free public domain books API (Project Gutenberg)
 
-Development Tools
+### Development Tools
 - Turbopack - Fast development bundler
 - ESLint - Code linting
 - TypeScript - Static type checking

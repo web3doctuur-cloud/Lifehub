@@ -9,6 +9,7 @@ interface Story {
   author: string;
   downloadUrl: string;
   cover: string;
+  textContent?: string;
 }
 
 export default function StorybooksPage() {
@@ -18,6 +19,10 @@ export default function StorybooksPage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [readingBook, setReadingBook] = useState<Story | null>(null);
+  const [readingContent, setReadingContent] = useState<string>("");
+  const [isReading, setIsReading] = useState(false);
+  const [loadingContent, setLoadingContent] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -46,26 +51,59 @@ export default function StorybooksPage() {
   };
 
   const downloadStory = async (url: string, title: string, id: string) => {
-    if (!url) {
-      alert("Download not available for this book");
-      return;
-    }
+  if (!url) {
+    alert("Download not available for this book");
+    return;
+  }
+  
+  setDownloadingId(id);
+  try {
     
-    setDownloadingId(id);
-    try {
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error("Error downloading story:", error);
-      alert("Failed to download story. Please try again.");
-    } finally {
-      setDownloadingId(null);
-    }
-  };
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${title.replace(/[^a-z0-9]/gi, '_')}.txt`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    
+    // For Firefox, append to body, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    
+    // Small delay before removing the link
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
+  } catch (error) {
+    console.error("Error downloading story:", error);
+    // Fallback: open in new tab
+    window.open(url, '_blank');
+  } finally {
+    setDownloadingId(null);
+  }
+};
+  const readStory = async (story: Story) => {
+  if (!story.downloadUrl) {
+    alert("This book is not available for reading online.");
+    return;
+  }
+  
+  setReadingBook(story);
+  setIsReading(true);
+  setLoadingContent(true);
+  
+  try {
+    // Use the same API endpoint with downloadUrl parameter
+    const res = await fetch(`/api/stories?downloadUrl=${encodeURIComponent(story.downloadUrl)}`);
+    if (!res.ok) throw new Error("Failed to fetch book content");
+    const data = await res.json();
+    setReadingContent(data.content || "Unable to load book content.");
+  } catch (error) {
+    console.error("Error loading book content:", error);
+    setReadingContent("Failed to load book content. Please try downloading the book instead.");
+  } finally {
+    setLoadingContent(false);
+  }
+};
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,10 +146,9 @@ export default function StorybooksPage() {
               Storybook <span className="gradient-text">Explorer</span>
             </h1>
             <p className="text-lg text-gray-400 mb-8">
-              Discover thousands of free classic books from Project Gutenberg. Search, read, and download your favorites.
+              Discover thousands of free classic books from Project Gutenberg. Read online or download your favorites.
             </p>
             
-            {/* Search Bar */}
             <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
               <div className="flex gap-3">
                 <div className="flex-1 relative">
@@ -184,7 +221,6 @@ export default function StorybooksPage() {
                 key={story.id}
                 className="group bg-gray-900 rounded-xl overflow-hidden border border-gray-800 hover:border-lilac-500/50 transition-all duration-300 hover:transform hover:-translate-y-1"
               >
-                {/* Book Cover */}
                 <div className="relative h-64 overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
                   {story.cover ? (
                     <img
@@ -201,7 +237,6 @@ export default function StorybooksPage() {
                     </div>
                   )}
                   
-                  {/* Download Badge */}
                   {story.downloadUrl && (
                     <div className="absolute top-2 right-2 bg-lilac-600/90 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
                       Available
@@ -209,7 +244,6 @@ export default function StorybooksPage() {
                   )}
                 </div>
 
-                {/* Book Info */}
                 <div className="p-5">
                   <h3 className="text-lg font-semibold text-white mb-1 line-clamp-2 group-hover:text-lilac-400 transition">
                     {story.title}
@@ -218,31 +252,97 @@ export default function StorybooksPage() {
                     by {story.author}
                   </p>
                   
-                  <button
-                    onClick={() => downloadStory(story.downloadUrl, story.title, story.id)}
-                    disabled={downloadingId === story.id}
-                    className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-lilac-600/10 border border-lilac-600/30 text-lilac-400 rounded-lg hover:bg-lilac-600 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {downloadingId === story.id ? (
-                      <>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => readStory(story)}
+                      disabled={!story.downloadUrl}
+                      className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-lilac-600/10 border border-lilac-600/30 text-lilac-400 rounded-lg hover:bg-lilac-600 hover:text-white transition-all duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      <span>Read</span>
+                    </button>
+                    
+                    <button
+                      onClick={() => downloadStory(story.downloadUrl, story.title, story.id)}
+                      disabled={downloadingId === story.id || !story.downloadUrl}
+                      className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:bg-gray-700 transition-all duration-200 disabled:opacity-50"
+                    >
+                      {downloadingId === story.id ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Downloading...</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        <span>Download Book</span>
-                      </>
-                    )}
-                  </button>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          <span>Download</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Reading Modal */}
+      {isReading && readingBook && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md animate-fadeIn">
+          <div className="bg-gray-900 rounded-xl border border-gray-800 max-w-4xl w-full max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-gray-900 border-b border-gray-800 p-4 flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-semibold text-white">{readingBook.title}</h3>
+                <p className="text-sm text-gray-400">by {readingBook.author}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => downloadStory(readingBook.downloadUrl, readingBook.title, readingBook.id)}
+                  className="p-2 text-gray-400 hover:text-lilac-400 transition"
+                  title="Download"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setIsReading(false)}
+                  className="p-2 text-gray-400 hover:text-white transition"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            {/* Reading Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingContent ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="w-12 h-12 border-4 border-lilac-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                  <p className="text-gray-400">Loading book content...</p>
+                </div>
+              ) : (
+                <div className="prose prose-invert max-w-none">
+                  <div className="text-gray-300 leading-relaxed whitespace-pre-wrap font-serif text-lg">
+                    {readingContent}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-gray-900 border-t border-gray-800 p-4 text-center text-xs text-gray-500">
+              <p>Public Domain Book • Provided by Project Gutenberg</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer Note */}
       <div className="container mx-auto px-4 py-8 text-center border-t border-gray-800 mt-8">
