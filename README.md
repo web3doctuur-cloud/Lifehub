@@ -1,7 +1,7 @@
 # 📚 LifeHub - All-in-One Productivity Suite
 
 LifeHub is a comprehensive web application that combines task management, note-taking, digital diary, storybook explorer, and calculator tools in one beautiful interface.
-
+## live domain : (https://lifehub-blond.vercel.app/)
 ## ✨ Features
 
 - ✅ **Todo List** - Create, manage, and track your tasks with completion status
